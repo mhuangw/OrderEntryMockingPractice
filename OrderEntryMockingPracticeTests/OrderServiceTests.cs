@@ -11,7 +11,7 @@ namespace OrderEntryMockingPracticeTests
         public void OrderItemsAreUnique()
         {
             // Arrange
-            //var stubOrderProvider = MockRepository.GenerateStub<>
+            var stubOrderProvider = MockRepository.GenerateStub<>
 
             // Act
 
@@ -23,11 +23,11 @@ namespace OrderEntryMockingPracticeTests
         public void AllProductsAreInStock()
         {
             // Arrange
-            var stubProductProvider = MockRepository.GenerateStub<IProductRepository>();
+            var stubProductRepository = MockRepository.GenerateStub<IProductRepository>();
             var stubProduct = MockRepository.GenerateStub<Product>();
 
             // Act
-            bool isInStock = stubProductProvider.IsInStock(stubProduct.Sku);
+            bool isInStock = stubProductRepository.IsInStock(stubProduct.Sku);
 
             // Assert
             Assert.True(isInStock);
@@ -47,11 +47,11 @@ namespace OrderEntryMockingPracticeTests
         public void CustomerInfoCanBeRetrieved()
         {
             // Arrange
-            var stubCustomerProvider = MockRepository.GenerateStub<ICustomerRepository>();
+            var stubCustomerRepository = MockRepository.GenerateStub<ICustomerRepository>();
             var stubCustomer = MockRepository.GenerateStub<Customer>();
 
             // Act
-            var customer = stubCustomerProvider.Get(stubCustomer.CustomerId.Value);
+            var customer = stubCustomerRepository.Get(stubCustomer.CustomerId.Value);
 
             // Assert
             Assert.NotNull(customer);
@@ -61,11 +61,11 @@ namespace OrderEntryMockingPracticeTests
         public void TaxesCanBeRetrieved()
         {
             // Arrange
-            var stubTaxesProvider = MockRepository.GenerateStub<ITaxRateService>();
+            var stubTaxRateService = MockRepository.GenerateStub<ITaxRateService>();
             var stubCustomer = MockRepository.GenerateStub<Customer>();
 
             // Act
-            var stubTaxes = stubTaxesProvider.GetTaxEntries(stubCustomer.PostalCode, stubCustomer.Country);
+            var stubTaxes = stubTaxRateService.GetTaxEntries(stubCustomer.PostalCode, stubCustomer.Country);
 
             // Assert
             Assert.NotEmpty(stubTaxes);
