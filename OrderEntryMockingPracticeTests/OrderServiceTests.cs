@@ -24,7 +24,7 @@ namespace OrderEntryMockingPracticeTests
         {
             // Arrange
             var stubProductProvider = MockRepository.GenerateStub<IProductRepository>();
-            var stubProduct = new Product();
+            var stubProduct = MockRepository.GenerateStub<Product>();
 
             // Act
             bool isInStock = stubProductProvider.IsInStock(stubProduct.Sku);
