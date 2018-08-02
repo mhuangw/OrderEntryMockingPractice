@@ -75,10 +75,14 @@ namespace OrderEntryMockingPracticeTests
         public void ProductRepositoryCanDetermineStock()
         {
             // Arrange
+            var stubProductRepository = MockRepository.GenerateStub<IProductRepository>();
+            var stubProduct = MockRepository.GenerateStub<Product>();
 
             // Act
+            var IsInStock = stubProductRepository.IsInStock(stubProduct.Sku);
 
             // Assert
+            Assert.IsType<bool>(IsInStock);
         }
     
     }
