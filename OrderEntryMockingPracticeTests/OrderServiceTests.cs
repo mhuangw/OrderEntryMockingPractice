@@ -47,10 +47,14 @@ namespace OrderEntryMockingPracticeTests
         public void CustomerInfoCanBeRetrieved()
         {
             // Arrange
+            var stubCustomerProvider = MockRepository.GenerateStub<ICustomerRepository>();
+            var stubCustomer = MockRepository.GenerateStub<Customer>();
 
             // Act
+            var customer = stubCustomerProvider.Get(stubCustomer.CustomerId.Value);
 
             // Assert
+            Assert.NotNull(customer);
         }
 
         [Fact]
