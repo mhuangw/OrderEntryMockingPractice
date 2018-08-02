@@ -24,10 +24,10 @@ namespace OrderEntryMockingPracticeTests
         {
             // Arrange
             var stubProductProvider = MockRepository.GenerateStub<IProductRepository>();
-            var product = new Product();
+            var stubProduct = new Product();
 
             // Act
-            bool isInStock = stubProductProvider.IsInStock(product.Sku);
+            bool isInStock = stubProductProvider.IsInStock(stubProduct.Sku);
 
             // Assert
             Assert.True(isInStock);
