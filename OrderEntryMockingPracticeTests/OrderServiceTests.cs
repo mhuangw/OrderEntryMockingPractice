@@ -61,10 +61,14 @@ namespace OrderEntryMockingPracticeTests
         public void TaxesCanBeRetrieved()
         {
             // Arrange
+            var stubTaxesProvider = MockRepository.GenerateStub<ITaxRateService>();
+            var stubCustomer = MockRepository.GenerateStub<Customer>();
 
             // Act
+            var stubTaxes = stubTaxesProvider.GetTaxEntries(stubCustomer.PostalCode, stubCustomer.Country);
 
             // Assert
+            Assert.NotEmpty(stubTaxes);
         }
 
         [Fact]
