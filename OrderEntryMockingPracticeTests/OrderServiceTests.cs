@@ -8,6 +8,21 @@ namespace OrderEntryMockingPracticeTests
 {
     public class OrderServiceTests
     {
+        private ICustomerRepository _customerRepository;
+        private IEmailService _emailService;
+        private IOrderFulfillmentService _orderFulfillmentService;
+        private IProductRepository _productRepository;
+        private ITaxRateService _taxRateService;
+
+        public OrderServiceTests()
+        {
+            _customerRepository = MockRepository.GenerateMock<ICustomerRepository>();
+            _emailService = MockRepository.GenerateMock<IEmailService>();
+            _orderFulfillmentService = MockRepository.GenerateMock<IOrderFulfillmentService>();
+            _productRepository = MockRepository.GenerateMock<IProductRepository>();
+            _taxRateService = MockRepository.GenerateMock<ITaxRateService>();
+        }
+
         public bool IsUnique(Order order)
         {
             HashSet<string> SkusSeen = new HashSet<string>();
@@ -50,14 +65,9 @@ namespace OrderEntryMockingPracticeTests
             Assert.True(isInStock);
         }
 
-        [Fact]
-        public void OrderIsValid()
+        public OrderSummary OrderIsValid()
         {
-            // Arrange
-
-            // Act
-
-            // Assert
+            
         }
 
         [Fact]
