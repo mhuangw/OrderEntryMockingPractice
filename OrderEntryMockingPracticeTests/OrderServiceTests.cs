@@ -2,21 +2,38 @@
 using Rhino.Mocks;
 using OrderEntryMockingPractice.Services;
 using OrderEntryMockingPractice.Models;
+using System.Collections.Generic;
 
 namespace OrderEntryMockingPracticeTests
 {
     public class OrderServiceTests
     {
+        public bool IsUnique(Order order)
+        {
+            HashSet<string> SkusSeen = new HashSet<string>();
+
+            foreach (OrderItem orderItem in order.OrderItems)
+            {
+                if (SkusSeen.Contains(orderItem.Product.Sku))
+                {
+                    return false;
+                }
+                SkusSeen.Add(orderItem.Product.Sku);
+            }
+            return true;
+        }
+
         [Fact]
         public void OrderItemsAreUnique()
         {
             // Arrange
-            var stubOrderProvider = MockRepository.GenerateStub<>
+            var order = MockRepository.GenerateStub<Order>();
 
             // Act
+            bool orderItemsAreUnique = IsUnique(order);
 
             // Assert
-
+            Assert.True(orderItemsAreUnique);
         }
 
         [Fact]
