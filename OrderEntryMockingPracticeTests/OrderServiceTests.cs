@@ -25,15 +25,15 @@ namespace OrderEntryMockingPracticeTests
 
         public bool IsUnique(Order order)
         {
-            HashSet<string> SkusSeen = new HashSet<string>();
+            HashSet<string> skusSeen = new HashSet<string>();
 
             foreach (OrderItem orderItem in order.OrderItems)
             {
-                if (SkusSeen.Contains(orderItem.Product.Sku))
+                if (skusSeen.Contains(orderItem.Product.Sku))
                 {
                     return false;
                 }
-                SkusSeen.Add(orderItem.Product.Sku);
+                skusSeen.Add(orderItem.Product.Sku);
             }
             return true;
         }
@@ -42,10 +42,10 @@ namespace OrderEntryMockingPracticeTests
         public void OrderItemsAreUnique()
         {
             // Arrange
-            var OrderStub = MockRepository.GenerateStub<Order>();
+            var orderStub = MockRepository.GenerateStub<Order>();
 
             // Act
-            bool orderItemsAreUnique = IsUnique(OrderStub);
+            bool orderItemsAreUnique = IsUnique(orderStub);
 
             // Assert
             Assert.True(orderItemsAreUnique);
@@ -55,30 +55,39 @@ namespace OrderEntryMockingPracticeTests
         public void AllProductsAreInStock()
         {
             // Arrange
-            var ProductRepositoryStub = MockRepository.GenerateStub<IProductRepository>();
-            var ProductStub = MockRepository.GenerateStub<Product>();
+            var productRepositoryStub = MockRepository.GenerateStub<IProductRepository>();
+            var productStub = MockRepository.GenerateStub<Product>();
 
             // Act
-            bool isInStock = ProductRepositoryStub.IsInStock(ProductStub.Sku);
+            bool isInStock = productRepositoryStub.IsInStock(productStub.Sku);
 
             // Assert
             Assert.True(isInStock);
         }
 
-        public OrderSummary OrderIsValid()
+        public void OrderIsValid()
         {
-            
+            bool isValid = true;
+            if (isValid)
+            {
+                Order orderStub = MockRepository.GenerateStub<Order>();
+                _orderFulfillmentService.Fulfill(orderStub);
+                _emailService.SendOrderConfirmationEmail(customerId, orderId);
+            } else
+            {
+                throw new Exception();
+            }
         }
 
         [Fact]
         public void CustomerInfoCanBeRetrieved()
         {
             // Arrange
-            var CustomerRepositoryStub = MockRepository.GenerateStub<ICustomerRepository>();
-            var CustomerStub = MockRepository.GenerateStub<Customer>();
+            var customerRepositoryStub = MockRepository.GenerateStub<ICustomerRepository>();
+            var customerStub = MockRepository.GenerateStub<Customer>();
 
             // Act
-            var customer = CustomerRepositoryStub.Get(CustomerStub.CustomerId.Value);
+            var customer = customerRepositoryStub.Get(customerStub.CustomerId.Value);
 
             // Assert
             Assert.NotNull(customer);
@@ -88,25 +97,25 @@ namespace OrderEntryMockingPracticeTests
         public void TaxesCanBeRetrieved()
         {
             // Arrange
-            var TaxRateServiceStub = MockRepository.GenerateStub<ITaxRateService>();
-            var CustomerStub = MockRepository.GenerateStub<Customer>();
+            var taxRateServiceStub = MockRepository.GenerateStub<ITaxRateService>();
+            var customerStub = MockRepository.GenerateStub<Customer>();
 
             // Act
-            var TaxesStub = TaxRateServiceStub.GetTaxEntries(CustomerStub.PostalCode, CustomerStub.Country);
+            var taxesStub = taxRateServiceStub.GetTaxEntries(customerStub.PostalCode, customerStub.Country);
 
             // Assert
-            Assert.NotEmpty(TaxesStub);
+            Assert.NotEmpty(taxesStub);
         }
 
         [Fact]
         public void ProductRepositoryCanDetermineStock()
         {
             // Arrange
-            var ProductRepositoryStub = MockRepository.GenerateStub<IProductRepository>();
-            var ProductStub = MockRepository.GenerateStub<Product>();
+            var productRepositoryStub = MockRepository.GenerateStub<IProductRepository>();
+            var productStub = MockRepository.GenerateStub<Product>();
 
             // Act
-            var isInStock = ProductRepositoryStub.IsInStock(ProductStub.Sku);
+            var isInStock = productRepositoryStub.IsInStock(productStub.Sku);
 
             // Assert
             Assert.True(isInStock);
