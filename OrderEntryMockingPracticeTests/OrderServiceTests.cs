@@ -36,7 +36,7 @@ namespace OrderEntryMockingPracticeTests
             var result = this.OrderService.PlaceOrder(order);
 
             // Then
-            result.ShouldNotBeNull();
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -56,7 +56,26 @@ namespace OrderEntryMockingPracticeTests
 
             // Then
             _orderFulfillmentService.AssertWasCalled(o => o.Fulfill(order));
-            result.OrderNumber.ShouldBe("1001");
+            Assert.Equal("1001", result.OrderNumber);
+        }
+
+        [Fact]
+        public void ContainsOrderFulfillmentNumber()
+        {
+            // Given
+            var order = new Order();
+            _orderFulfillmentService
+                .Stub(o => o.Fulfill(order))
+                .Return(new OrderConfirmation()
+                {
+                    OrderNumber = "1001"
+                });
+
+            // When
+            var result = this.OrderService.PlaceOrder(order);
+
+            // Then
+
         }
 
     }
