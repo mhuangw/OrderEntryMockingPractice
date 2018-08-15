@@ -6,15 +6,20 @@ using System.Collections.Generic;
 
 namespace OrderEntryMockingPracticeTests
 {
-    public class CMOrderServiceTests
+    public class OrderServiceTests
     {
         private ICustomerRepository _customerRepository;
         private IEmailService _emailService;
         private IOrderFulfillmentService _orderFulfillmentService;
         private IProductRepository _productRepository;
         private ITaxRateService _taxRateService;
+        private List<TaxEntry> _taxEntries;
+        private OrderService _orderService;
 
-        public CMOrderServiceTests()
+        private const string postalCode = "98101";
+        private const string country = "USA";
+
+        public OrderServiceTests()
         {
             _customerRepository = MockRepository.GenerateMock<ICustomerRepository>();
             _emailService = MockRepository.GenerateMock<IEmailService>();
@@ -22,7 +27,33 @@ namespace OrderEntryMockingPracticeTests
             _productRepository = MockRepository.GenerateMock<IProductRepository>();
             _taxRateService = MockRepository.GenerateMock<ITaxRateService>();
 
-            this.OrderService = new OrderService();
+            _taxEntries = new List<TaxEntry>()
+            {
+                CreateTaxEntry("test", 12),
+                CreateTaxEntry("test2", 10)
+            };
+
+            _productRepository
+                .Stub(p => p.IsInStock("product_1"))
+                .Return(true);
+
+            _productRepository
+                .Stub(p => p.IsInStock("product_2"))
+                .Return(true);
+
+            var order = new Order();
+            _orderFulfillmentService
+                .Stub(o => o.Fulfill(order))
+                .Return(new OrderConfirmation()
+                {
+                    OrderNumber = "1001"
+                });
+
+            _taxRateService
+                .Stub(t => t.GetTaxEntries(postalCode, country))
+                .Return(_taxEntries);
+
+            _orderService = new OrderService(_emailService, _orderFulfillmentService, _productRepository, _taxRateService, postalCode, country);
         }
         public OrderService OrderService { get; set; }
 

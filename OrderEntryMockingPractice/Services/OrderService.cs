@@ -13,10 +13,10 @@ namespace OrderEntryMockingPractice.Services
         private string _postalCode;
         private string _country;
 
-        public OrderService(IProductRepository productRepository,
-            ITaxRateService taxRateService,
-            IEmailService emailService,
+        public OrderService(IEmailService emailService,
             IOrderFulfillmentService orderFulfillmentService,
+            IProductRepository productRepository,
+            ITaxRateService taxRateService,
             string postalCode, string country)
         {
             _productRepository = productRepository;
@@ -45,10 +45,10 @@ namespace OrderEntryMockingPractice.Services
             return total_tax;
         }
 
-        public OrderService(IEmailService emailService, 
-                            IOrderFulfillmentService orderFulfillmentService,
-                            IProductRepository productRepository,
+        public OrderService(IProductRepository productRepository,
                             ITaxRateService taxRateService,
+                            IOrderFulfillmentService orderFulfillmentService,
+                            IEmailService emailService, 
                             string postalCode, string country)
         {
             _productRepository = productRepository;
