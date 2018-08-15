@@ -15,6 +15,22 @@ namespace OrderEntryMockingPracticeTests
         private ITaxRateService _taxRateService;
         private List<TaxEntry> _taxEntries;
         private OrderService _orderService;
+        private Order _order;
+
+        private const string product_sku_1 = "product_sku_1";
+        private const string product_sku_2 = "product_sku_2";
+        private const string product_sku_3 = "product_sku_3";
+
+        private const int customer_id_1 = 12345;
+        private const int customer_id_2 = 23456;
+
+        private const int order_id_1 = 12;
+        private const int order_id_2 = 14;
+
+        private const string order_no_1 = "1123";
+        private const string order_no_2 = "2332";
+
+        private const int quantity = 2;
 
         private const string postalCode = "98101";
         private const string country = "USA";
@@ -55,58 +71,50 @@ namespace OrderEntryMockingPracticeTests
 
             _orderService = new OrderService(_emailService, _orderFulfillmentService, _productRepository, _taxRateService, postalCode, country);
         }
-        public OrderService OrderService { get; set; }
-
-        [Fact]
-        public void ReturnsOrderSummary()
+        private static OrderItem CreateOrderItemObject(string product_sku, int quantity, decimal price)
         {
-            // Given
-            var order = new Order();
-
-            // When
-            var result = this.OrderService.PlaceOrder(order);
-
-            // Then
-            Assert.NotNull(result);
+            var orderItem = new OrderItem
+            {
+                Product = new Product(),
+                Quantity = quantity
+            };
+            orderItem.Product.Sku = product_sku;
+            orderItem.Product.Price = price;
+            return orderItem;
         }
 
-        [Fact]
-        public void SubmitOrderToFulfillment()
+        private Order CreateOrderObject(string product_sku_1, string product_sku_2, int customer_id = customer_id_1)
         {
-            // Given
-            var order = new Order();
-            _orderFulfillmentService
-                .Stub(o => o.Fulfill(order))
-                .Return(new OrderConfirmation()
-                {
-                    OrderNumber = "1001"
-                });
+            _order = new Order();
+            OrderItem orderItem1 = CreateOrderItemObject(product_sku_1, 1, 30);
+            OrderItem orderItem2 = CreateOrderItemObject(product_sku_2, 2, 10);
 
-            // When
-            var result = this.OrderService.PlaceOrder(order);
-
-            // Then
-            _orderFulfillmentService.AssertWasCalled(o => o.Fulfill(order));
-            Assert.Equal("1001", result.OrderNumber);
+            _order.OrderItems = new List<OrderItem>
+            {
+                orderItem1,
+                orderItem2
+            };
+            _order.CustomerId = customer_id;
+            return _order;
         }
 
-        [Fact]
-        public void ContainsOrderFulfillmentNumber()
+        private OrderConfirmation CreateOrderConfirmationObject(int customerId, int orderId, string orderNumber)
         {
-            // Given
-            var order = new Order();
-            _orderFulfillmentService
-                .Stub(o => o.Fulfill(order))
-                .Return(new OrderConfirmation()
-                {
-                    OrderNumber = "1001"
-                });
+            var orderConfirmationObject = new OrderConfirmation();
+            orderConfirmationObject.CustomerId = customerId;
+            orderConfirmationObject.OrderId = orderId;
+            orderConfirmationObject.OrderNumber = orderNumber;
+            return orderConfirmationObject;
+        }
 
-            // When
-            var result = this.OrderService.PlaceOrder(order);
-
-            // Then
-
+        private TaxEntry CreateTaxEntry(string tax_description, decimal tax_rate)
+        {
+            TaxEntry taxEntry = new TaxEntry
+            {
+                Description = tax_description,
+                Rate = tax_rate
+            };
+            return taxEntry;
         }
 
     }
