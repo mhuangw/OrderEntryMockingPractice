@@ -117,6 +117,84 @@ namespace OrderEntryMockingPracticeTests
             return taxEntry;
         }
 
+        [Fact]
+        public void Test_All_Products_Are_In_Stock_Returns_Correct_OrderSummary()
+        {
+            _order = CreateOrderObject(product_sku_1, product_sku_2, customer_id_2);
+
+            OrderSummary orderSummary = _orderService.PlaceOrder(_order);
+            Assert.Equal(orderSummary.CustomerId, customer_id_2);
+            Assert.Equal(orderSummary.OrderId, order_id_1);
+            Assert.Equal(orderSummary.OrderNumber, order_no_1);
+        }
+
+        [Fact]
+        public void Test_All_Products_Are_Not_In_Stock_throw_Exception()
+        {
+            _order = CreateOrderObject(product_sku_1, product_sku_3);
+
+            Assert.Throws<OrderItemsAreNotInStockException>
+                (() => _orderService.PlaceOrder(_order));
+        }
+
+        [Fact]
+        public void If_Order_Items_Are__Not_Unique_By_SKU_Throw_Exception()
+        {
+            _order = CreateOrderObject(product_sku_1, product_sku_1);
+
+            //Act and Assert
+
+            Assert.Throws<OrderItemsAreNotUniqueException>
+                (() => _orderService.PlaceOrder(_order));
+        }
+
+        [Fact]
+        public void Test_Email_Service_Has_Been_Called_Once()
+        {
+            _order = CreateOrderObject(product_sku_1, product_sku_2);
+            _orderService.PlaceOrder(_order);
+            _emailService.AssertWasCalled(e => e.SendOrderConfirmationEmail(customer_id_1, order_id_1), options => options.Repeat.Times(1));
+        }
+
+        [Fact]
+        public void Test_OrderFullFilment_Service_Was_Called_Once()
+        {
+            _order = CreateOrderObject(product_sku_1, product_sku_2);
+            _orderService.PlaceOrder(_order);
+            _orderFulfillmentService.AssertWasCalled(s => s.Fulfill(_order), options => options.Repeat.Times(1));
+        }
+
+        [Fact]
+        public void Test_TaxRateService_Was_Called_Once()
+        {
+            _order = CreateOrderObject(product_sku_1, product_sku_2);
+            _orderService.PlaceOrder(_order);
+            _taxRateService.AssertWasCalled(s => s.GetTaxEntries(postalCode, country), options => options.Repeat.Times(1));
+        }
+
+        [Fact]
+        public void Test_TaxRateService_Returns_The_Expected_TaxRate()
+        {
+            _order = CreateOrderObject(product_sku_1, product_sku_2);
+            OrderSummary orderSummary = _orderService.PlaceOrder(_order);
+            Assert.Equal(83, orderSummary.Total);
+        }
+
+        [Fact]
+        public void Test_OrderService_Returns_The_Expected_NetTotal()
+        {
+            _order = CreateOrderObject(product_sku_1, product_sku_2);
+            OrderSummary orderSummary = _orderService.PlaceOrder(_order);
+            Assert.Equal(50, orderSummary.NetTotal);
+        }
+
+        [Fact]
+        public void Test_OrderService_Returns_The_Expected_Tax_Entries()
+        {
+            _order = CreateOrderObject(product_sku_1, product_sku_2);
+            OrderSummary orderSummary = _orderService.PlaceOrder(_order);
+            Assert.Equal(orderSummary.Taxes, _taxEntries);
+        }
     }
 }
 
